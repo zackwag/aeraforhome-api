@@ -13,6 +13,7 @@ from aera.const import (
     ALL_READABLE_PROPERTIES,
     DEVICE_METADATA_KEY,
     DEVICE_SERVICE_URL,
+    PROP_EJECT_PRESSED,
     PROP_SET_INTENSITY_MANUAL,
     PROP_SET_POWER_STATE,
     PROP_SET_SESSION_LENGTH,
@@ -254,6 +255,10 @@ class AeraApi:
     async def stop_session(self, device: AeraDevice | str) -> bool:
         """Stop a running fragrance session (set session length to 0)."""
         return await self.set_property(device, PROP_SET_SESSION_LENGTH, 0)
+
+    async def eject_cartridge(self, device: AeraDevice | str) -> bool:
+        """Eject the fragrance cartridge (full-size devices only)."""
+        return await self.set_property(device, PROP_EJECT_PRESSED, 1)
 
     async def get_mini_fragrances(self) -> list[dict[str, str | None]]:
         """Get all Mini-compatible fragrances with name, code, and QR URL."""
