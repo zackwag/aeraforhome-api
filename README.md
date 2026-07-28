@@ -84,6 +84,7 @@ asyncio.run(main())
 | `create_schedule_action(key, data)` | Create an action on a schedule |
 | `update_schedule_action(key, data)` | Update an existing schedule action |
 | `delete_schedule_action(key)` | Delete a schedule action |
+| `eject_cartridge(device)` | Eject the fragrance cartridge (full-size only) |
 | `get_mini_fragrances()` | Get all Mini fragrance names, codes, and QR URLs |
 | `get_device_metadata()` | Fetch user-assigned room names and positions |
 | `sign_out()` | Sign out from the service |
@@ -105,6 +106,11 @@ asyncio.run(main())
 | `session_active` | Whether a timed session is running |
 | `session_time_remaining` | Minutes left in session |
 | `has_error` | Whether the device has an error condition |
+| `error_condition` | Error code (integer, 0 = no error) |
+| `firmware_version` | Device firmware version string |
+| `max_intensity` | Maximum intensity level for this device type |
+| `has_session_feature` | Whether the device supports timed sessions |
+| `device_key` | Ayla device key (used for schedule APIs) |
 
 ## Scripts
 
