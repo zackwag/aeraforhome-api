@@ -128,9 +128,11 @@ class AeraApi:
                 _LOGGER.debug("Got 401, attempting token refresh")
                 await self.refresh_auth()
                 return await self._request(method, url, json=json, retry_on_401=False)
-            if resp.status not in (200, 201):
+            if resp.status not in (200, 201, 204):
                 text = await resp.text()
                 raise AeraApiError(f"API error ({resp.status}): {text}")
+            if resp.status == 204 or resp.content_length == 0:
+                return None
             return await resp.json()
 
     async def get_devices(self) -> list[AeraDevice]:
@@ -267,9 +269,9 @@ class AeraApi:
 
     async def get_schedules(self, device: AeraDevice | str) -> list[dict[str, Any]]:
         """Fetch all schedules for a device."""
-        dsn = device.dsn if isinstance(device, AeraDevice) else device
+        device_key = self._get_device_key(device)
         data = await self._request(
-            "GET", f"{DEVICE_SERVICE_URL}/apiv1/dsns/{dsn}/schedules.json"
+            "GET", f"{DEVICE_SERVICE_URL}/apiv1/devices/{device_key}/schedules.json"
         )
         schedules = []
         for item in data:
@@ -278,17 +280,69 @@ class AeraApi:
         return schedules
 
     async def update_schedule(
-        self, device: AeraDevice | str, schedule_key: str, schedule_data: dict[str, Any]
+        self, schedule_key: int, schedule_data: dict[str, Any]
     ) -> dict[str, Any]:
-        """Update a schedule on a device."""
-        dsn = device.dsn if isinstance(device, AeraDevice) else device
+        """Update a schedule."""
         payload = {"schedule": schedule_data}
         data = await self._request(
             "PUT",
-            f"{DEVICE_SERVICE_URL}/apiv1/dsns/{dsn}/schedules/{schedule_key}.json",
+            f"{DEVICE_SERVICE_URL}/apiv1/schedules/{schedule_key}.json",
             json=payload,
         )
         return data.get("schedule", data)
+
+    async def get_schedule_actions(self, schedule_key: int) -> list[dict[str, Any]]:
+        """Fetch all actions for a schedule."""
+        data = await self._request(
+            "GET",
+            f"{DEVICE_SERVICE_URL}/apiv1/schedules/{schedule_key}/schedule_actions.json",
+        )
+        actions = []
+        for item in data:
+            action = item.get("schedule_action", item)
+            actions.append(action)
+        return actions
+
+    async def create_schedule_action(
+        self, schedule_key: int, action_data: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Create a new action on a schedule."""
+        payload = {"schedule_action": action_data}
+        data = await self._request(
+            "POST",
+            f"{DEVICE_SERVICE_URL}/apiv1/schedules/{schedule_key}/schedule_actions.json",
+            json=payload,
+        )
+        return data.get("schedule_action", data)
+
+    async def update_schedule_action(
+        self, action_key: int, action_data: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Update an existing schedule action."""
+        payload = {"schedule_action": action_data}
+        data = await self._request(
+            "PUT",
+            f"{DEVICE_SERVICE_URL}/apiv1/schedule_actions/{action_key}.json",
+            json=payload,
+        )
+        return data.get("schedule_action", data)
+
+    async def delete_schedule_action(self, action_key: int) -> bool:
+        """Delete a schedule action."""
+        await self._request(
+            "DELETE",
+            f"{DEVICE_SERVICE_URL}/apiv1/schedule_actions/{action_key}.json",
+        )
+        return True
+
+    def _get_device_key(self, device: AeraDevice | str) -> int:
+        """Get the numeric device key for API calls that require it."""
+        if isinstance(device, AeraDevice):
+            return device.device_key
+        dev = self._devices.get(device)
+        if dev:
+            return dev.device_key
+        raise AeraApiError(f"Unknown device: {device}")
 
     async def sign_out(self) -> bool:
         """Sign out from the Ayla service."""

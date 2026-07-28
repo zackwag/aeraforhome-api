@@ -60,6 +60,10 @@ class AeraDevice:
         return self._data.get("dsn", "")
 
     @property
+    def device_key(self) -> int:
+        return self._data.get("key", 0)
+
+    @property
     def product_name(self) -> str:
         return self._data.get("product_name", "")
 
