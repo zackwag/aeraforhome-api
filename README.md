@@ -79,7 +79,11 @@ asyncio.run(main())
 | `start_session(device, minutes)` | Start a timed session |
 | `stop_session(device)` | Stop a running session |
 | `get_schedules(device)` | Fetch device schedules |
-| `update_schedule(device, key, data)` | Update a schedule |
+| `update_schedule(key, data)` | Update a schedule |
+| `get_schedule_actions(key)` | Fetch actions (intensity) for a schedule |
+| `create_schedule_action(key, data)` | Create an action on a schedule |
+| `update_schedule_action(key, data)` | Update an existing schedule action |
+| `delete_schedule_action(key)` | Delete a schedule action |
 | `get_mini_fragrances()` | Get all Mini fragrance names, codes, and QR URLs |
 | `get_device_metadata()` | Fetch user-assigned room names and positions |
 | `sign_out()` | Sign out from the service |
@@ -106,6 +110,7 @@ asyncio.run(main())
 
 - **`example.py`** - Minimal usage example showing device listing and control.
 - **`test_local.py`** - Interactive test script that dumps all device properties including raw values, useful for debugging.
+- **`test_schedules.py`** - Dumps active schedules and their actions (intensity values) for all devices.
 
 ## Development
 
