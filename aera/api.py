@@ -280,13 +280,14 @@ class AeraApi:
         return schedules
 
     async def update_schedule(
-        self, schedule_key: int, schedule_data: dict[str, Any]
+        self, device: AeraDevice | str, schedule_key: int, schedule_data: dict[str, Any]
     ) -> dict[str, Any]:
         """Update a schedule."""
+        device_key = self._get_device_key(device)
         payload = {"schedule": schedule_data}
         data = await self._request(
             "PUT",
-            f"{DEVICE_SERVICE_URL}/apiv1/schedules/{schedule_key}.json",
+            f"{DEVICE_SERVICE_URL}/apiv1/devices/{device_key}/schedules/{schedule_key}.json",
             json=payload,
         )
         return data.get("schedule", data)
