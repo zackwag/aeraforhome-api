@@ -84,7 +84,6 @@ asyncio.run(main())
 | `create_schedule_action(key, data)` | Create an action on a schedule |
 | `update_schedule_action(key, data)` | Update an existing schedule action |
 | `delete_schedule_action(key)` | Delete a schedule action |
-| `eject_cartridge(device)` | Eject the fragrance cartridge (full-size only) |
 | `get_mini_fragrances()` | Get all Mini fragrance names, codes, and QR URLs |
 | `get_device_metadata()` | Fetch user-assigned room names and positions |
 | `sign_out()` | Sign out from the service |

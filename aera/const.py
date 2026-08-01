@@ -12,7 +12,6 @@ PROP_SET_INTENSITY_MANUAL = "set_intensity_manual"
 PROP_SET_INTENSITY_SCHEDULE = "set_intensity_sched"
 PROP_SET_SESSION_LENGTH = "set_session_length"
 PROP_SET_FRAGRANCE_IDENTIFIER = "set_fragrance_identifier"
-PROP_EJECT_PRESSED = "eject_press_on_app"
 PROP_DEVICE_FW_VERSION = "device_fw_version"
 PROP_QR_SCANNED_TIME = "pump_life_time_qr_scanned"
 
