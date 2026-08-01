@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aeraforhome"
-version = "0.2.1"
+version = "0.2.2"
 description = "Python API for Aera for Home smart fragrance diffusers"
 readme = "README.md"
 license = {text = "MIT"}
