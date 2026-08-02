@@ -143,6 +143,8 @@ class AeraDevice:
     def fragrance_remaining(self) -> int | None:
         if self.device_type.is_mini:
             return self._mini_fragrance_remaining()
+        if self.is_cartridge_present is False:
+            return None
         usage = self.cartridge_usage
         if usage is None:
             return None
@@ -173,12 +175,16 @@ class AeraDevice:
 
     @property
     def fragrance_name(self) -> str | None:
+        if self.device_type.is_full_size and self.is_cartridge_present is False:
+            return None
         if self._fragrance_info and self._fragrance_info.fragrance_name:
             return self._fragrance_info.fragrance_name
         return self._properties.get("fragrance_name") or None
 
     @property
     def fragrance_color(self) -> str | None:
+        if self.device_type.is_full_size and self.is_cartridge_present is False:
+            return None
         if self._fragrance_info:
             return self._fragrance_info.color
         return None
