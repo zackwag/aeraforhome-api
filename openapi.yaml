@@ -1,0 +1,587 @@
+openapi: 3.1.0
+info:
+  title: Aera for Home API
+  description: |
+    Reverse-engineered API for Aera smart fragrance diffusers, built on the
+    Ayla Networks IoT platform. Used by the Aera for Home mobile app.
+  version: 0.2.4
+  license:
+    name: MIT
+
+servers:
+  - url: https://user-field.aylanetworks.com
+    description: Ayla User Service (authentication, user data)
+  - url: https://ads-field.aylanetworks.com
+    description: Ayla Device Service (devices, properties, schedules)
+
+components:
+  securitySchemes:
+    auth_token:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: "Format: `auth_token {access_token}`"
+
+  schemas:
+    LoginRequest:
+      type: object
+      required: [user]
+      properties:
+        user:
+          type: object
+          required: [email, password, application]
+          properties:
+            email:
+              type: string
+              format: email
+            password:
+              type: string
+            application:
+              type: object
+              required: [app_id, app_secret]
+              properties:
+                app_id:
+                  type: string
+                app_secret:
+                  type: string
+
+    LoginResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        role:
+          type: string
+        expires_in:
+          type: integer
+
+    RefreshTokenRequest:
+      type: object
+      required: [user]
+      properties:
+        user:
+          type: object
+          required: [refresh_token]
+          properties:
+            refresh_token:
+              type: string
+
+    Device:
+      type: object
+      properties:
+        dsn:
+          type: string
+          description: Device Serial Number (unique identifier)
+          example: AC000W021949219
+        key:
+          type: integer
+          description: Numeric device key used in schedule URLs
+        product_name:
+          type: string
+        model:
+          type: string
+        oem_model:
+          type: string
+        connection_status:
+          type: string
+          enum: [Online, Offline]
+        sw_version:
+          type: string
+        mac:
+          type: string
+
+    DeviceWrapper:
+      type: object
+      properties:
+        device:
+          $ref: '#/components/schemas/Device'
+
+    Property:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Property name
+        value:
+          description: Property value (type varies by property)
+        base_type:
+          type: string
+          enum: [integer, string, boolean]
+        read_only:
+          type: boolean
+        direction:
+          type: string
+          enum: [input, output]
+
+    PropertyWrapper:
+      type: object
+      properties:
+        property:
+          $ref: '#/components/schemas/Property'
+
+    DatapointRequest:
+      type: object
+      required: [datapoint]
+      properties:
+        datapoint:
+          type: object
+          required: [value]
+          properties:
+            value:
+              description: The value to set
+
+    Schedule:
+      type: object
+      properties:
+        key:
+          type: integer
+          description: Unique schedule identifier
+        active:
+          type: boolean
+          description: Whether the schedule is enabled
+        start_time_each_day:
+          type: string
+          format: time
+          example: "08:00:00"
+        end_time_each_day:
+          type: string
+          format: time
+          example: "22:00:00"
+        days_of_week:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+          description: "Days of week (1=Sunday, 2=Monday, ..., 7=Saturday)"
+          example: [2, 3, 4, 5, 6]
+        display_name:
+          type: string
+        name:
+          type: string
+
+    ScheduleWrapper:
+      type: object
+      properties:
+        schedule:
+          $ref: '#/components/schemas/Schedule'
+
+    ScheduleUpdateRequest:
+      type: object
+      required: [schedule]
+      properties:
+        schedule:
+          type: object
+          properties:
+            active:
+              type: boolean
+            start_time_each_day:
+              type: string
+              format: time
+            end_time_each_day:
+              type: string
+              format: time
+            days_of_week:
+              type: array
+              items:
+                type: integer
+
+    ScheduleAction:
+      type: object
+      properties:
+        key:
+          type: integer
+          description: Unique action identifier
+        name:
+          type: string
+          description: Action type
+          example: set_intensity_sched
+        value:
+          type: string
+          description: Action value (e.g. intensity level as string)
+          example: "5"
+        base_type:
+          type: string
+          enum: [integer, string, boolean]
+        active:
+          type: boolean
+        at_start:
+          type: boolean
+          description: Execute action when schedule starts
+        at_end:
+          type: boolean
+          description: Execute action when schedule ends
+        in_range:
+          type: boolean
+          description: Execute action while schedule is active
+
+    ScheduleActionWrapper:
+      type: object
+      properties:
+        schedule_action:
+          $ref: '#/components/schemas/ScheduleAction'
+
+    ScheduleActionRequest:
+      type: object
+      required: [schedule_action]
+      properties:
+        schedule_action:
+          type: object
+          properties:
+            name:
+              type: string
+            value:
+              type: string
+            base_type:
+              type: string
+            active:
+              type: boolean
+            at_start:
+              type: boolean
+            at_end:
+              type: boolean
+            in_range:
+              type: boolean
+
+    UserDatum:
+      type: object
+      properties:
+        datum:
+          type: object
+          properties:
+            key:
+              type: string
+            value:
+              type: string
+              description: JSON-encoded array of device metadata entries
+
+security:
+  - auth_token: []
+
+paths:
+  /users/sign_in.json:
+    post:
+      operationId: login
+      summary: Authenticate with email and password
+      tags: [Authentication]
+      security: []
+      servers:
+        - url: https://user-field.aylanetworks.com
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+
+  /users/refresh_token.json:
+    post:
+      operationId: refreshToken
+      summary: Refresh an expired access token
+      tags: [Authentication]
+      security: []
+      servers:
+        - url: https://user-field.aylanetworks.com
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Refresh token invalid
+
+  /users/sign_out.json:
+    post:
+      operationId: signOut
+      summary: Sign out and invalidate the access token
+      tags: [Authentication]
+      servers:
+        - url: https://user-field.aylanetworks.com
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    access_token:
+                      type: string
+      responses:
+        '200':
+          description: Signed out
+
+  /apiv1/devices.json:
+    get:
+      operationId: getDevices
+      summary: List all devices on the account
+      tags: [Devices]
+      servers:
+        - url: https://ads-field.aylanetworks.com
+      responses:
+        '200':
+          description: List of devices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeviceWrapper'
+
+  /apiv1/dsns/{dsn}/properties.json:
+    get:
+      operationId: getDeviceProperties
+      summary: Get all properties for a device
+      tags: [Devices]
+      servers:
+        - url: https://ads-field.aylanetworks.com
+      parameters:
+        - name: dsn
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Device Serial Number
+      responses:
+        '200':
+          description: List of device properties
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PropertyWrapper'
+
+  /apiv1/dsns/{dsn}/properties/{property_name}/datapoints.json:
+    post:
+      operationId: setProperty
+      summary: Set a property value on a device
+      tags: [Devices]
+      servers:
+        - url: https://ads-field.aylanetworks.com
+      parameters:
+        - name: dsn
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: property_name
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - set_power_state
+              - set_intensity_manual
+              - set_session_length
+              - set_fragrance_identifier
+          description: |
+            Writable properties:
+            - `set_power_state` — 0 (off) or 1 (on)
+            - `set_intensity_manual` — 1-10 (full-size) or 1-5 (Mini)
+            - `set_session_length` — duration in minutes (0 to stop)
+            - `set_fragrance_identifier` — fragrance code string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatapointRequest'
+      responses:
+        '201':
+          description: Datapoint created
+
+  /api/v1/users/data/{key}.json:
+    get:
+      operationId: getUserData
+      summary: Get user-assigned device metadata (room names)
+      tags: [User Data]
+      servers:
+        - url: https://user-field.aylanetworks.com
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+            example: device_data_table
+      responses:
+        '200':
+          description: User data datum
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDatum'
+
+  /apiv1/devices/{device_key}/schedules.json:
+    get:
+      operationId: getSchedules
+      summary: List all schedules for a device
+      description: |
+        Returns all 20 pre-allocated schedule slots. Each device has 20 slots;
+        unused ones have `active: false` and default values.
+      tags: [Schedules]
+      servers:
+        - url: https://ads-field.aylanetworks.com
+      parameters:
+        - name: device_key
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Numeric device key (from device object, not DSN)
+      responses:
+        '200':
+          description: List of schedules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScheduleWrapper'
+
+  /apiv1/devices/{device_key}/schedules/{schedule_key}.json:
+    put:
+      operationId: updateSchedule
+      summary: Update a schedule
+      description: |
+        Update schedule properties. To "create" a schedule, activate an
+        inactive slot and set its times/days. To "delete", set `active: false`.
+      tags: [Schedules]
+      servers:
+        - url: https://ads-field.aylanetworks.com
+      parameters:
+        - name: device_key
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: schedule_key
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleUpdateRequest'
+      responses:
+        '200':
+          description: Updated schedule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleWrapper'
+
+  /apiv1/schedules/{schedule_key}/schedule_actions.json:
+    get:
+      operationId: getScheduleActions
+      summary: List actions for a schedule
+      tags: [Schedules]
+      servers:
+        - url: https://ads-field.aylanetworks.com
+      parameters:
+        - name: schedule_key
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of schedule actions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScheduleActionWrapper'
+    post:
+      operationId: createScheduleAction
+      summary: Create an action on a schedule
+      tags: [Schedules]
+      servers:
+        - url: https://ads-field.aylanetworks.com
+      parameters:
+        - name: schedule_key
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleActionRequest'
+      responses:
+        '201':
+          description: Action created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleActionWrapper'
+
+  /apiv1/schedule_actions/{action_key}.json:
+    put:
+      operationId: updateScheduleAction
+      summary: Update a schedule action
+      tags: [Schedules]
+      servers:
+        - url: https://ads-field.aylanetworks.com
+      parameters:
+        - name: action_key
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleActionRequest'
+      responses:
+        '200':
+          description: Action updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleActionWrapper'
+    delete:
+      operationId: deleteScheduleAction
+      summary: Delete a schedule action
+      tags: [Schedules]
+      servers:
+        - url: https://ads-field.aylanetworks.com
+      parameters:
+        - name: action_key
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Action deleted
