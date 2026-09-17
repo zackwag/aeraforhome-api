@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/zackwag/aeraforhome-api/compare/v0.3.1...v0.4.0) (2026-09-17)
+
+
+### Features
+
+* **ci:** add ruff lint + format check ([#13](https://github.com/zackwag/aeraforhome-api/issues/13)) ([3abd6bc](https://github.com/zackwag/aeraforhome-api/commit/3abd6bc147700770ff2042e65a959f063645dca0))
+
 ## [0.3.1](https://github.com/zackwag/aeraforhome-api/compare/v0.3.0...v0.3.1) (2026-09-17)
 
 
