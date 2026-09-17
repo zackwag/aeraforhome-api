@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/zackwag/aeraforhome-api/compare/v0.3.0...v0.3.1) (2026-09-17)
+
+
+### Bug Fixes
+
+* **ci:** use RELEASE_PLEASE_TOKEN so releases trigger downstream workflows ([#11](https://github.com/zackwag/aeraforhome-api/issues/11)) ([8d259c1](https://github.com/zackwag/aeraforhome-api/commit/8d259c1a72041dc4e45fd38299e643184f4f6614))
+
 ## [0.3.0](https://github.com/zackwag/aeraforhome-api/compare/v0.2.5...v0.3.0) (2026-09-17)
 
 
