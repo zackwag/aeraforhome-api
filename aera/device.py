@@ -161,9 +161,7 @@ class AeraDevice:
         mini_output = self._fragrance_info.mini_output
         if not mini_fill or not mini_output:
             return None
-        usage = round(
-            ((int(pump_life) - int(pump_qr)) * mini_output / (mini_fill * 3600)) * 100
-        )
+        usage = round(((int(pump_life) - int(pump_qr)) * mini_output / (mini_fill * 3600)) * 100)
         return max(0, min(100, 100 - usage))
 
     @property

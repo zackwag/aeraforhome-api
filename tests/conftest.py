@@ -4,15 +4,14 @@ from __future__ import annotations
 
 from typing import Any
 
-import pytest
 import aiohttp
+import pytest
 from aioresponses import aioresponses
 
-from aera.const import DEVICE_SERVICE_URL, USER_SERVICE_URL
 from aera.api import AeraApi
-from aera.device import AeraDevice
+from aera.const import USER_SERVICE_URL
 from aera.contentful import FragranceInfo
-
+from aera.device import AeraDevice
 
 FAKE_EMAIL = "test@example.com"
 FAKE_PASSWORD = "password123"

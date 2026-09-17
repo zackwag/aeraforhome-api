@@ -21,8 +21,8 @@ async def main():
             print(f"    Type: {device.device_type.name}")
             print(f"    Online: {device.is_online}")
 
-            # Fetch properties
-            props = await api.get_device_properties(device)
+            # Fetch properties (populates the device's cached property values below)
+            await api.get_device_properties(device)
             print(f"    Power: {'On' if device.is_power_on else 'Off'}")
             print(f"    Intensity: {device.intensity}/{device.max_intensity}")
             print(f"    Fragrance: {device.fragrance_name}")

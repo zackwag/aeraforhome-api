@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
+import aiohttp
 import pytest
 from aioresponses import aioresponses
-import aiohttp
 
 from aera.contentful import (
+    CONTENTFUL_BASE_URL,
     ContentfulClient,
     FragranceInfo,
-    CONTENTFUL_BASE_URL,
 )
 
 
@@ -45,7 +45,9 @@ def _make_entry(
 ENTRIES_RESPONSE = {
     "items": [
         _make_entry("Ocean Mist", "OM001", "QR-OM001", "ocean_mist", "#3A7BD5", 8.0, 0.05),
-        _make_entry("Lavender Fields", "LF002", "QR-LF002", "lavender_fields", "#9B59B6", 7.0, 0.04),
+        _make_entry(
+            "Lavender Fields", "LF002", "QR-LF002", "lavender_fields", "#9B59B6", 7.0, 0.04
+        ),
         _make_entry("Classic Vanilla", None, None, "classic_vanilla", "#F5E6CC", None, None),
     ],
     "total": 3,
@@ -53,7 +55,6 @@ ENTRIES_RESPONSE = {
 
 
 class TestContentfulClientLoad:
-
     async def test_load_fragrances(self):
         async with aiohttp.ClientSession() as session:
             client = ContentfulClient(session)
@@ -105,13 +106,14 @@ class TestContentfulClientLoad:
 
 
 class TestContentfulClientLookup:
-
     @pytest.fixture
     def loaded_client(self) -> ContentfulClient:
         client = ContentfulClient()
         client._fragrances = [
             FragranceInfo("OM001", "QR-OM001", "Ocean Mist", "ocean_mist", "#3A7BD5", 8.0, 0.05),
-            FragranceInfo("LF002", "QR-LF002", "Lavender Fields", "lavender_fields", "#9B59B6", 7.0, 0.04),
+            FragranceInfo(
+                "LF002", "QR-LF002", "Lavender Fields", "lavender_fields", "#9B59B6", 7.0, 0.04
+            ),
             FragranceInfo(None, None, "Classic Vanilla", "classic_vanilla", "#F5E6CC", None, None),
         ]
         client._loaded = True
@@ -188,7 +190,6 @@ class TestContentfulClientLookup:
 
 
 class TestContentfulClientSession:
-
     async def test_creates_own_session_when_none(self):
         client = ContentfulClient(session=None)
         session = await client._get_session()

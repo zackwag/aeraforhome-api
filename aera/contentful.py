@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Any
 
 import aiohttp
 
@@ -52,10 +51,7 @@ class ContentfulClient:
         limit = 100
 
         while True:
-            url = (
-                f"{CONTENTFUL_BASE_URL}/entries"
-                f"?content_type=fragrance&limit={limit}&skip={skip}"
-            )
+            url = f"{CONTENTFUL_BASE_URL}/entries?content_type=fragrance&limit={limit}&skip={skip}"
             async with session.get(url, headers=headers) as resp:
                 if resp.status != 200:
                     _LOGGER.error("Contentful API error: %s", resp.status)

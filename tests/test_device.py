@@ -4,12 +4,11 @@ from __future__ import annotations
 
 import pytest
 
-from aera.device import AeraDevice, DeviceType
 from aera.contentful import FragranceInfo
+from aera.device import AeraDevice, DeviceType
 
 
 class TestDeviceType:
-
     @pytest.mark.parametrize(
         "oem_model, expected",
         [
@@ -62,7 +61,6 @@ class TestDeviceType:
 
 
 class TestAeraDeviceBasicProperties:
-
     def test_dsn(self, device):
         assert device.dsn == "AC000W123456789"
 
@@ -141,7 +139,6 @@ class TestAeraDeviceBasicProperties:
 
 
 class TestAeraDeviceProperties:
-
     def test_properties_from_constructor(self, device_with_props):
         assert device_with_props.is_power_on is True
         assert device_with_props.intensity == 5
@@ -226,7 +223,6 @@ class TestAeraDeviceProperties:
 
 
 class TestAeraDeviceFragrance:
-
     def test_fragrance_remaining_full_size(self):
         dev = AeraDevice(
             {"oem_model": "aera3"},
@@ -363,7 +359,6 @@ class TestAeraDeviceFragrance:
 
 
 class TestAeraDeviceSessionFeature:
-
     @pytest.mark.parametrize(
         "oem_model, expected",
         [
