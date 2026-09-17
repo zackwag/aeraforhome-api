@@ -51,7 +51,7 @@ async def main():
                     print(f"    {key} = {val!r}")
             print()
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - interactive script, print any failure instead of a raw traceback
         print(f"\nError: {e}")
     finally:
         await api.close()

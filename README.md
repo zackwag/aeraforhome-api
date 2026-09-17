@@ -27,6 +27,7 @@ pip install -e .
 import asyncio
 from aera import AeraApi
 
+
 async def main():
     api = AeraApi("your-email@example.com", "your-password")
 
@@ -52,6 +53,7 @@ async def main():
 
     finally:
         await api.close()
+
 
 asyncio.run(main())
 ```

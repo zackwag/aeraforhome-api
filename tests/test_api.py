@@ -3,22 +3,18 @@
 from __future__ import annotations
 
 import json
-from typing import Any
 
 import pytest
 
-from aera.api import AeraApi, AeraAuthError, AeraApiError
+from aera.api import AeraApi, AeraApiError, AeraAuthError
 from aera.const import DEVICE_SERVICE_URL, USER_SERVICE_URL
 from tests.conftest import (
     DEVICE_DATA,
-    MINI_DEVICE_DATA,
     LOGIN_RESPONSE,
-    SAMPLE_PROPERTIES,
 )
 
 
 class TestAuth:
-
     async def test_login_success(self, api, mock_aiohttp):
         mock_aiohttp.post(
             f"{USER_SERVICE_URL}/users/sign_in.json",
@@ -83,7 +79,6 @@ class TestAuth:
 
 
 class TestRequest:
-
     async def test_auto_refresh_on_401(self, authenticated_api, mock_aiohttp):
         mock_aiohttp.get(
             f"{DEVICE_SERVICE_URL}/apiv1/devices.json",
@@ -111,7 +106,6 @@ class TestRequest:
 
 
 class TestDevices:
-
     async def test_get_devices(self, authenticated_api, mock_aiohttp):
         mock_aiohttp.get(
             f"{DEVICE_SERVICE_URL}/apiv1/devices.json",
@@ -170,7 +164,6 @@ class TestDevices:
 
 
 class TestProperties:
-
     async def test_get_device_properties(self, authenticated_api, mock_aiohttp):
         mock_aiohttp.get(
             f"{DEVICE_SERVICE_URL}/apiv1/devices.json",
@@ -233,7 +226,6 @@ class TestProperties:
 
 
 class TestSessions:
-
     async def test_start_session(self, authenticated_api, mock_aiohttp):
         mock_aiohttp.post(
             f"{DEVICE_SERVICE_URL}/apiv1/dsns/AC000W123456789/properties/set_session_length/datapoints.json",
@@ -254,7 +246,6 @@ class TestSessions:
 
 
 class TestSchedules:
-
     async def test_get_schedules(self, authenticated_api, mock_aiohttp):
         mock_aiohttp.get(
             f"{DEVICE_SERVICE_URL}/apiv1/devices.json",
@@ -280,7 +271,6 @@ class TestSchedules:
 
 
 class TestSessionManagement:
-
     async def test_close_cleans_up(self, mock_aiohttp):
         api = AeraApi("a@b.com", "pw")
         mock_aiohttp.post(

@@ -10,7 +10,6 @@ import aiohttp
 from aera.const import (
     AERA_APP_ID,
     AERA_APP_SECRET,
-    ALL_READABLE_PROPERTIES,
     DEVICE_METADATA_KEY,
     DEVICE_SERVICE_URL,
     PROP_SET_INTENSITY_MANUAL,
@@ -149,7 +148,7 @@ class AeraApi:
             devices.append(self._devices[dsn])
         try:
             await self.get_device_metadata()
-        except Exception as ex:
+        except Exception as ex:  # noqa: BLE001 - metadata (room names) is supplementary; devices list must still return
             _LOGGER.debug("Failed to fetch device metadata: %s", ex)
         return devices
 
@@ -183,9 +182,7 @@ class AeraApi:
     async def get_device_properties(self, device: AeraDevice | str) -> dict[str, Any]:
         """Fetch all properties for a device. Returns a dict of name -> value."""
         dsn = device.dsn if isinstance(device, AeraDevice) else device
-        data = await self._request(
-            "GET", f"{DEVICE_SERVICE_URL}/apiv1/dsns/{dsn}/properties.json"
-        )
+        data = await self._request("GET", f"{DEVICE_SERVICE_URL}/apiv1/dsns/{dsn}/properties.json")
         properties: dict[str, Any] = {}
         for item in data:
             prop = item.get("property", item)
@@ -217,9 +214,7 @@ class AeraApi:
         info = contentful.resolve_fragrance(identifier, device.device_type.is_mini)
         device.fragrance_info = info
 
-    async def set_property(
-        self, device: AeraDevice | str, property_name: str, value: Any
-    ) -> bool:
+    async def set_property(self, device: AeraDevice | str, property_name: str, value: Any) -> bool:
         """Set a property value on a device (creates a datapoint)."""
         dsn = device.dsn if isinstance(device, AeraDevice) else device
         payload = {"datapoint": {"value": value}}
@@ -245,9 +240,7 @@ class AeraApi:
             level = max(1, min(level, max_level))
         return await self.set_property(device, PROP_SET_INTENSITY_MANUAL, level)
 
-    async def start_session(
-        self, device: AeraDevice | str, duration_minutes: int
-    ) -> bool:
+    async def start_session(self, device: AeraDevice | str, duration_minutes: int) -> bool:
         """Start a timed fragrance session."""
         return await self.set_property(device, PROP_SET_SESSION_LENGTH, duration_minutes)
 
@@ -357,10 +350,10 @@ class AeraApi:
                 f"{USER_SERVICE_URL}/users/sign_out.json",
                 headers=headers,
                 json=payload,
-            ) as resp:
+            ):
                 pass
-        except Exception:
-            pass
+        except Exception as ex:  # noqa: BLE001 - best-effort server logout; tokens are cleared locally regardless
+            _LOGGER.debug("Sign-out request failed: %s", ex)
         self._access_token = None
         self._refresh_token = None
         return True

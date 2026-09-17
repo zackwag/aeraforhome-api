@@ -1,7 +1,6 @@
 """Dump schedule data for debugging."""
 
 import asyncio
-import json
 from getpass import getpass
 
 from aera import AeraApi
@@ -25,7 +24,9 @@ async def main():
                 for s in active:
                     print(f"\n  Schedule: {s.get('display_name', s.get('name'))}")
                     print(f"    Key: {s.get('key')}")
-                    print(f"    Time: {s.get('start_time_each_day')} - {s.get('end_time_each_day')}")
+                    print(
+                        f"    Time: {s.get('start_time_each_day')} - {s.get('end_time_each_day')}"
+                    )
                     print(f"    Days: {s.get('days_of_week')}")
                     print(f"    Active: {s.get('active')}")
 
@@ -34,10 +35,12 @@ async def main():
                     if actions:
                         print(f"    Actions ({len(actions)}):")
                         for a in actions:
-                            print(f"      - {a.get('name')}: {a.get('value')} "
-                                  f"(type={a.get('base_type')}, active={a.get('active')}, "
-                                  f"in_range={a.get('in_range')}, at_start={a.get('at_start')}, "
-                                  f"at_end={a.get('at_end')}, key={a.get('key')})")
+                            print(
+                                f"      - {a.get('name')}: {a.get('value')} "
+                                f"(type={a.get('base_type')}, active={a.get('active')}, "
+                                f"in_range={a.get('in_range')}, at_start={a.get('at_start')}, "
+                                f"at_end={a.get('at_end')}, key={a.get('key')})"
+                            )
                     else:
                         print("    Actions: none")
     finally:
