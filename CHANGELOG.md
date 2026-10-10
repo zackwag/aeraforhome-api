@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.1](https://github.com/zackwag/aeraforhome-api/compare/v0.4.0...v0.4.1) (2026-10-10)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump actions/checkout from 4 to 7 ([#17](https://github.com/zackwag/aeraforhome-api/issues/17)) ([945a106](https://github.com/zackwag/aeraforhome-api/commit/945a10690e819393572857b9f2779b43c61f5ccf))
+* **deps:** bump amannn/action-semantic-pull-request from 5 to 6 ([#15](https://github.com/zackwag/aeraforhome-api/issues/15)) ([ce30306](https://github.com/zackwag/aeraforhome-api/commit/ce30306f92a7fc1616f41cad42790a39e207f3f4))
+* **deps:** bump googleapis/release-please-action from 4 to 5 ([#16](https://github.com/zackwag/aeraforhome-api/issues/16)) ([ca2ef83](https://github.com/zackwag/aeraforhome-api/commit/ca2ef8399993cfa5ae08321bdad71bafd772907f))
+
 ## [0.4.0](https://github.com/zackwag/aeraforhome-api/compare/v0.3.1...v0.4.0) (2026-09-17)
 
 
