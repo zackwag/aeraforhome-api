@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/zackwag/aeraforhome-api/compare/v0.4.1...v0.4.2) (2026-11-11)
+
+
+### Miscellaneous Chores
+
+* fix dependabot commit-message prefixes for conventional commits ([#20](https://github.com/zackwag/aeraforhome-api/issues/20)) ([eae70b1](https://github.com/zackwag/aeraforhome-api/commit/eae70b127f5ba050c830066669888b5363867473))
+
 ## [0.4.1](https://github.com/zackwag/aeraforhome-api/compare/v0.4.0...v0.4.1) (2026-10-10)
 
 
